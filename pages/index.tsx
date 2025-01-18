@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <>
-      <Navigation />
+      <Navigation isHomePage={true} />
       <div>
         <Image
         src="/home/darkangels-bg2.jpg"

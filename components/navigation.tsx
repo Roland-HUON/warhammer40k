@@ -3,18 +3,11 @@
 import Image from "next/image"
 import Link from "next/link"
 
-// async function getStaticProps() {
-//   const res : Response = await fetch("http://localhost:1337/api/factions");
-//   const data : {data: Faction[]} = await res.json();
-//   return {
-//     props: {
-//       factions: data.data,
-//     },
-//     revalidate: 60,
-//   }
-// }
+interface NavigationProps {
+  isHomePage: boolean;
+}
 
-export default function Navigation() {
+export default function Navigation({ isHomePage }: NavigationProps) {
 
   const routes = [
     { href: "/", label: "Home" },
@@ -28,12 +21,12 @@ export default function Navigation() {
         <div className="mr-4 flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
             <Image
-            src="/logo/logo.png"
+            src={isHomePage ? "/logo/logo-black.png" : "/logo/logo.png"}
             width={50}
             height={50}
             alt="Logo de la faction Dark Angels"></Image>
           </Link>
-          <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
+          <nav className={`hidden md:flex items-center space-x-6 text-sm uppercase font-black ${isHomePage ? '' : 'text-[#898989]'}`}>
             {routes.slice(1).map((route) => (
               <Link
                 key={route.href}
