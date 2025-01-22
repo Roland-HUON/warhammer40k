@@ -3,20 +3,11 @@ import Navigation from '@/components/navigation'
 import { Metadata } from 'next'
 import fetchData from '@/pages/functions/fetchData'
 import Link from 'next/link'
-
-interface Heroes {
-    id: number,
-    name: string,
-    equipment: string,
-    faction: string,
-    armies: string,
-    imageUrl: string,
-    slug : string,
-}
+import { Heroes } from './herosInterface'
 
 export const metadata: Metadata = {
-    title: "Héros - Dark Angels  - Warhammer 40k",
-    description: "Bienvenue chez les Darks Angels Commandant ! Ici vous retrouverez les grands héros de notre faction !",
+    title: "Heros - Dark Angels  - Warhammer 40k",
+    description: "Welcome to the Darks Angels Commander ! Here you will find the great heroes of our faction !",
 }
 
 export default async function Heros({ heros }: { heros: Heroes[] }) {
@@ -34,13 +25,13 @@ export default async function Heros({ heros }: { heros: Heroes[] }) {
                     </div>
                     <div className='bg-black/70 absolute z-10 text-white h-screen flex flex-col justify-center items-center uppercase font-black tracking-widest text-center gap-8'>
                         <div>
-                            <h1 className='text-7xl'>Bienvenue chez les Darks Angels Commandant !</h1>
-                            <h2 className='pt-4 text-3xl'>Ici vous retrouverez les grands héros de notre faction !</h2>
+                            <h1 className='text-7xl'>Welcome to the Darks Angels Commander !</h1>
+                            <h2 className='pt-4 text-3xl'>Here you will find the great heroes of our faction !</h2>
                         </div>
                         <div className='flex justify-between w-full'>
                             {heros.map((hero) => (
                                 <Link key={hero.id} href={`/heros/${hero.slug}`}>
-                                    <div key={hero.id} className='transition-transform hover:scale-110'>
+                                    <div className='transition-transform hover:scale-110'>
                                         <Image
                                             src={hero.imageUrl}
                                             alt={hero.name}
