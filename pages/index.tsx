@@ -16,8 +16,7 @@ export const metadata: Metadata = {
   description: "Les Dark Angels sont une des Légions Space Marines d'origine, fondée par Lion El'Jonson. Ils sont connus pour leur secret et leur obsession à...",
 }
 
-export default function Home({ faction }: { faction: Faction }) {
-  fetchData('http://localhost:1337/api/factions');
+export default function Home({ faction }: { faction: Faction[] }) {
   return (
     <>
       <Navigation isHomePage={true} />
@@ -27,10 +26,18 @@ export default function Home({ faction }: { faction: Faction }) {
         alt="Dark Angels background"
         layout="fill"
         objectFit="cover"/>
-        <div className="absolute bottom-0 bg-black opacity-75 text-white p-4">
+        {faction.length > 0 ? (
+          faction.map((faction) => (
+        <div className="absolute bottom-0 bg-black opacity-75 text-white p-4" key={faction.id}>
           <h1 className="text-3xl">{ faction.name }</h1>
           <p className="pt-4 text-base">{faction.description}</p>
         </div>
+        ))
+        ) : (
+          <div className="absolute bottom-0 bg-black opacity-75 text-white p-4">
+            <h1 className="text-3xl">No factions available</h1>
+          </div>
+        )}
       </div>
     </>
   )
@@ -38,6 +45,7 @@ export default function Home({ faction }: { faction: Faction }) {
 
 export async function getStaticProps() {
   const data = await fetchData('http://localhost:1337/api/factions')
+  console.log(data)
   return {
     props: {
       faction: data.data,
