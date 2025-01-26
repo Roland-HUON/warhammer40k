@@ -5,8 +5,8 @@ import { Heroes } from "../herosInterface";
 import fetchData from '@/pages/functions/fetchData'
 
 export const metadata: Metadata = {
-  title: "Héros - Dark Angels  - Warhammer 40k",
-  description: "Commandant, le héros que vous cherchez est ici",
+  title: "Heroes - Dark Angels  - Warhammer 40k",
+  description: "Commander, the hero you're looking for is here",
 }
 
 export default function Heros( { heros }: { heros: Heroes }) {
