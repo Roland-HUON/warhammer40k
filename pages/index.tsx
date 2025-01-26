@@ -45,7 +45,6 @@ export default function Home({ faction }: { faction: Faction[] }) {
 
 export async function getStaticProps() {
   const data = await fetchData('http://localhost:1337/api/factions')
-  console.log(data)
   return {
     props: {
       faction: data.data,
