@@ -4,7 +4,6 @@ import { Metadata } from 'next'
 import fetchData from '@/pages/functions/fetchData'
 import Link from 'next/link'
 import { Heroes } from './herosInterface'
-import { get } from 'http'
 
 export const metadata: Metadata = {
     title: "Heros - Dark Angels  - Warhammer 40k",
@@ -31,10 +30,10 @@ export default async function Heros({ heros }: { heros: Heroes[] }) {
                         </div>
                         <div className='flex justify-between w-full'>
                             {heros.map((hero) => (
-                                <Link key={hero.id} href={`/heros/${hero.slug}`}>
+                                <Link key={hero.id} href={`/heros/${hero.id}`}>
                                     <div className='transition-transform hover:scale-110'>
                                         <Image
-                                            src={`http://localhost:1337/uploads/lion_eljonson_b0f01057cd.png`}
+                                            src={hero.imageUrl}
                                             alt={hero.name}
                                             width={300}
                                             height={600} />
@@ -42,54 +41,6 @@ export default async function Heros({ heros }: { heros: Heroes[] }) {
                                     </div>
                                 </Link>
                             ))}
-                            {/* <div className='transition-transform hover:scale-110'>
-                                <Image
-                                    src="/heros/lion_eljonson.png"
-                                    alt=""
-                                    width={300}
-                                    height={600} />
-                                <h3>Lion El&apos;Jonson</h3>
-                            </div>
-                            <div>
-                                <Image
-                                    src="/heros/azrael.png"
-                                    alt=""
-                                    width={300}
-                                    height={600} />
-                                <h3>Azrael</h3>
-                            </div>
-                            <div>
-                                <Image
-                                    src="/heros/ezekiel.png"
-                                    alt=""
-                                    width={300}
-                                    height={600} />
-                                <h3>Ezekiel</h3>
-                            </div>
-                            <div>
-                                <Image
-                                    src="/heros/asmodai.png"
-                                    alt=""
-                                    width={300}
-                                    height={600} />
-                                <h3>Asmodai</h3>
-                            </div>
-                            <div>
-                                <Image
-                                    src="/heros/sammael.png"
-                                    alt=""
-                                    width={300}
-                                    height={600} />
-                                <h3>Sammael</h3>
-                            </div>
-                            <div>
-                                <Image
-                                    src="/heros/belial.png"
-                                    alt=""
-                                    width={300}
-                                    height={600} />
-                                <h3>Belial</h3>
-                            </div> */}
                         </div>
                     </div>
                 </section>
@@ -98,22 +49,36 @@ export default async function Heros({ heros }: { heros: Heroes[] }) {
     )
 }
 
-export async function getStaticProps() {
-    const data = await fetchData('http://localhost:1337/api/heroes')
-    console.log(data)
-    return {
-      props: {
-        heros: data.data,
-      },
-      revalidate: 60,
-    }
-}
+export async function getStaticProps(){
+    const baseUrl = 'http://localhost:1337/api/heroes';
+    const heroesData = await fetchData(baseUrl); // Récupère tous les héros
 
-export async function getStaticImage(hero: { documentId: string }){
-    const imageUrl = await fetchData(`http://localhost:1337/api/heroes/${hero.documentId}?populate=*`)
+    // Récupère uniquement les URLs des images
+    const heroesWithImages = await Promise.all(
+        heroesData.data.map(async (hero: Heroes) => {
+            const imageData = await fetchData(`http://localhost:1337/api/heroes/${hero.documentId}?populate=*`);
+            console.log(imageData)
+            const imageUrl = `http://localhost:1337${imageData.data.imageUrl.url}`
+                ? `http://localhost:1337${imageData.data.imageUrl.url}` 
+                : '/default-image.jpg';
+            console.log(imageUrl)
+            return {
+                id: hero.id,
+                documentId: hero.documentId,
+                name: hero.name,
+                role: hero.role,
+                equipment: hero.equipment,
+                faction: hero.faction,
+                armies: hero.armies,
+                imageUrl,
+                slug: hero.slug,
+            };
+        })
+    );
+
     return {
         props: {
-            imageUrl: imageUrl.data.imageUrl.url,
+            heros: heroesWithImages,
         },
         revalidate: 60,
     }
