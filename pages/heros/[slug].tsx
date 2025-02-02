@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Navigation from "@/components/navigation";
 import Image from "next/image";
-import { Heroes } from "../herosInterface";
+import { Heroes } from "./herosInterface";
 import fetchData from '@/pages/functions/fetchData'
 
 export const metadata: Metadata = {
@@ -35,23 +35,48 @@ export default function Heros( { heros }: { heros: Heroes }) {
   )
 }
 
-export async function getStaticProps({ params }: { params: { hero: string } }) {
-    const data = await fetchData(`http://localhost:1337/api/heroes/${params.hero}`)
+export async function getStaticProps( { params }: { params: { slug: string } }) {
+    const baseUrl = 'http://localhost:1337/api/heroes';
+    const imageData = await fetchData(baseUrl);
+
+    const hero = imageData.data.find((hero: Heroes) => hero.slug === params.slug);
+
+    const heroDocumentId = hero.documentId;
+
+    const newUrl = await fetchData(`http://localhost:1337/api/heroes/${heroDocumentId}?populate=*`);
+    console.log(newUrl);
+    const imageUrl = `http://localhost:1337${newUrl.data.imageUrl.url}`
+        ? `http://localhost:1337${newUrl.data.imageUrl.url}` 
+        : '/default-image.jpg';
+    console.log(imageUrl);
     return {
         props: {
-            heros: data.data,
+            heros: {
+                id: hero.id,
+                documentId: hero.documentId,
+                name: hero.name,
+                role: hero.role,
+                equipment: hero.equipment,
+                faction: hero.faction,
+                armies: hero.armies,
+                imageUrl: imageUrl,
+                slug: hero.slug,
+            },
         },
         revalidate: 60,
-    }
+    };
 }
 
-export async function getStaticPaths() {
-    const data = await fetchData('http://localhost:1337/api/heroes')
+export async function getStaticPaths (){
+    const baseUrl = 'http://localhost:1337/api/heroes';
+    const data = await fetchData(baseUrl);
     const paths = data.data.map((hero: Heroes) => ({
-        params: { hero: hero.id.toString() }
+        params: { slug: hero.slug },
     }))
+    console.log(paths)
+
     return {
         paths,
-        fallback: false
-    }
-}
+        fallback: "blocking",
+    };
+};

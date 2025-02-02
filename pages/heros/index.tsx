@@ -30,7 +30,7 @@ export default async function Heros({ heros }: { heros: Heroes[] }) {
                         </div>
                         <div className='flex justify-between w-full'>
                             {heros.map((hero) => (
-                                <Link key={hero.id} href={`/heros/${hero.id}`}>
+                                <Link key={hero.id} href={`/heros/${hero.slug}`}>
                                     <div className='transition-transform hover:scale-110'>
                                         <Image
                                             src={hero.imageUrl}
@@ -57,11 +57,9 @@ export async function getStaticProps(){
     const heroesWithImages = await Promise.all(
         heroesData.data.map(async (hero: Heroes) => {
             const imageData = await fetchData(`http://localhost:1337/api/heroes/${hero.documentId}?populate=*`);
-            console.log(imageData)
             const imageUrl = `http://localhost:1337${imageData.data.imageUrl.url}`
                 ? `http://localhost:1337${imageData.data.imageUrl.url}` 
                 : '/default-image.jpg';
-            console.log(imageUrl)
             return {
                 id: hero.id,
                 documentId: hero.documentId,
