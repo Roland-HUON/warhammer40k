@@ -51,9 +51,8 @@ export default async function Heros({ heros }: { heros: Heroes[] }) {
 
 export async function getStaticProps(){
     const baseUrl = 'http://localhost:1337/api/heroes';
-    const heroesData = await fetchData(baseUrl); // Récupère tous les héros
+    const heroesData = await fetchData(baseUrl);
 
-    // Récupère uniquement les URLs des images
     const heroesWithImages = await Promise.all(
         heroesData.data.map(async (hero: Heroes) => {
             const imageData = await fetchData(`http://localhost:1337/api/heroes/${hero.documentId}?populate=*`);

@@ -44,11 +44,9 @@ export async function getStaticProps( { params }: { params: { slug: string } }) 
     const heroDocumentId = hero.documentId;
 
     const newUrl = await fetchData(`http://localhost:1337/api/heroes/${heroDocumentId}?populate=*`);
-    console.log(newUrl);
     const imageUrl = `http://localhost:1337${newUrl.data.imageUrl.url}`
         ? `http://localhost:1337${newUrl.data.imageUrl.url}` 
         : '/default-image.jpg';
-    console.log(imageUrl);
     return {
         props: {
             heros: {

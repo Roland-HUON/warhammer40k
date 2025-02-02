@@ -35,8 +35,8 @@ export default async function Troops({ troops }: { troops: Troop[] }) {
                                         <Image
                                             src={troop.imageUrl}
                                             alt={troop.name}
-                                            width={300}
-                                            height={600} />
+                                            width={150}
+                                            height={300} />
                                         <h3>{troop.name}</h3>
                                     </div>
                                 </Link>
@@ -49,12 +49,33 @@ export default async function Troops({ troops }: { troops: Troop[] }) {
     )
 }
 
-export async function getStaticProps() {
-    const data = await fetchData('http://localhost:1337/api/troops')
+export async function getStaticProps(){
+    const baseUrl = 'http://localhost:1337/api/troops';
+    const troopsData = await fetchData(baseUrl);
+
+    const troopsWithImages = await Promise.all(
+        troopsData.data.map(async (troop: Troop) => {
+            const imageData = await fetchData(`http://localhost:1337/api/troops/${troop.documentId}?populate=*`);
+            const imageUrl = `http://localhost:1337${imageData.data.imageUrl.url}`
+                ? `http://localhost:1337${imageData.data.imageUrl.url}` 
+                : '/default-image.jpg';
+            console.log(imageUrl);
+            return {
+                id: troop.id,
+                documentId: troop.documentId,
+                name: troop.name,
+                faction: troop.faction,
+                armies: troop.armies,
+                imageUrl,
+                slug: troop.slug,
+            };
+        })
+    );
+
     return {
-      props: {
-        troops: data.data,
-      },
-      revalidate: 60,
+        props: {
+            troops: troopsWithImages,
+        },
+        revalidate: 60,
     }
 }
